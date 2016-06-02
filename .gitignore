@@ -1,0 +1,11 @@
+a.out
+*.log
+*.aux
+*.auxlock
+*.md5
+*.pdf
+*.dpth
+*.png
+*.html
+
+

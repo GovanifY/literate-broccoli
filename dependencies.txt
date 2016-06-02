@@ -1,0 +1,15 @@
+components/mux2x1.v
+components/mux4x1.v
+components/dff.v
+components/tsb.v
+bidir/bidir_tsb.v
+bidir/bidir_switch.v
+bidir/bidir_switch_block.v
+bidir/bidir_routing_block.v
+bidir/io_block.v
+logic_block.v
+fpga_row.v
+last_row_routing.v
+fpga_top.v
+tb_fpga.v
+
