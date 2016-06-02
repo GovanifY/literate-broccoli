@@ -8,12 +8,18 @@ module tb_fpga();
 	reg [749:0] brbselect;
 	reg [1727:0] bsbselect;
 	reg [79:0] lbselect;
-	reg [19:0] leftioselect;
-	reg [19:0] rightioselect;
-	reg [19:0] topioselect;
-	reg [19:0] bottomioselect;
+	reg [29:0] leftioselect;
+	reg [29:0] rightioselect;
+	reg [29:0] topioselect;
+	reg [29:0] bottomioselect;
 
 	wire [4:0] left, right, top, bottom;
+
+	assign bottom[0] = A;
+	assign bottom[2] = B;
+	assign bottom[4] = carryin;
+	assign out = top[0];
+	assign carryout = top[4];
 
 	fpga_top f1(
 		clk, 
@@ -26,10 +32,10 @@ module tb_fpga();
 		brbselect = 750'b0;
 		bsbselect = 1728'b0;
 		lbselect = 80'b0;
-		leftioselect = 20'b0;
-		rightioselect = 20'b0;
-		topioselect = 20'b0;
-		bottomioselect = 20'b0;
+		leftioselect = 30'b0;
+		rightioselect = 30'b0;
+		topioselect = 30'b0;
+		bottomioselect = 30'b0;
 		/*for (k = 0; k < 750; k = k + 1)
 		begin
 			brbselect[k] = 1'b0;
@@ -51,8 +57,8 @@ module tb_fpga();
 		end*/
 		$display("initialized memory");
 		// #10 select = 4'b0000;
-		set_bottom_io_cfg(0, 0, 1); // Bottom left in
-		set_top_io_cfg(0, 0, 2); // Top left out
+		set_bottom_io_cfg(0, 0, 2); // Bottom left in
+		set_top_io_cfg(0, 0, 1); // Top left out
 		set_brb_cfg(0, 0, 0, 3, 2);
 		set_brb_cfg(1, 0, 0, 3, 2);
 		set_brb_cfg(2, 0, 0, 3, 2);
@@ -74,26 +80,15 @@ module tb_fpga();
 	task set_top_io_cfg;
 		input io_index, io_line, io_dir;
 		begin
-			if (io_line == 0) begin
-				topioselect[io_index*4] = 1'b0;
-				topioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				topioselect[io_index*4] = 1'b1;
-				topioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				topioselect[io_index*4] = 1'b0;
-				topioselect[io_index*4+1] = 1'b1;
-			end
-
 			if (io_dir == 0) begin // Off
-				topioselect[io_index*4+2] = 1'b0;
-				topioselect[io_index*4+3] = 1'b0;
-			end else if (io_dir == 1) begin // In
-				topioselect[io_index*4+2] = 1'b0;
-				topioselect[io_index*4+3] = 1'b1;
-			end else if (io_dir == 2) begin // Out
-				topioselect[io_index*4+2] = 1'b1;
-				topioselect[io_index*4+3] = 1'b0;
+				topioselect[io_index*6+io_line*2+0] = 1'b0;
+				topioselect[io_index*6+io_line*2+1] = 1'b0;
+			end else if (io_dir == 1) begin // Out
+				topioselect[io_index*6+io_line*2+0] = 1'b0;
+				topioselect[io_index*6+io_line*2+1] = 1'b1;
+			end else if (io_dir == 2) begin // In
+				topioselect[io_index*6+io_line*2+0] = 1'b1;
+				topioselect[io_index*6+io_line*2+1] = 1'b0;
 			end
 		end
 	endtask
@@ -101,26 +96,15 @@ module tb_fpga();
 	task set_bottom_io_cfg;
 		input io_index, io_line, io_dir;
 		begin
-			if (io_line == 0) begin
-				bottomioselect[io_index*4] = 1'b0;
-				bottomioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				bottomioselect[io_index*4] = 1'b1;
-				bottomioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				bottomioselect[io_index*4] = 1'b0;
-				bottomioselect[io_index*4+1] = 1'b1;
-			end
-
 			if (io_dir == 0) begin // Off
-				bottomioselect[io_index*4+2] = 1'b0;
-				bottomioselect[io_index*4+3] = 1'b0;
-			end else if (io_dir == 1) begin // In
-				bottomioselect[io_index*4+2] = 1'b0;
-				bottomioselect[io_index*4+3] = 1'b1;
-			end else if (io_dir == 2) begin // Out
-				bottomioselect[io_index*4+2] = 1'b1;
-				bottomioselect[io_index*4+3] = 1'b0;
+				bottomioselect[io_index*6+io_line*2+0] = 1'b0;
+				bottomioselect[io_index*6+io_line*2+1] = 1'b0;
+			end else if (io_dir == 1) begin // Out
+				bottomioselect[io_index*6+io_line*2+0] = 1'b0;
+				bottomioselect[io_index*6+io_line*2+1] = 1'b1;
+			end else if (io_dir == 2) begin // In
+				bottomioselect[io_index*6+io_line*2+0] = 1'b1;
+				bottomioselect[io_index*6+io_line*2+1] = 1'b0;
 			end
 		end
 	endtask
@@ -128,26 +112,15 @@ module tb_fpga();
 	task set_left_io_cfg;
 		input io_index, io_line, io_dir;
 		begin
-			if (io_line == 0) begin
-				leftioselect[io_index*4] = 1'b0;
-				leftioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				leftioselect[io_index*4] = 1'b1;
-				leftioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				leftioselect[io_index*4] = 1'b0;
-				leftioselect[io_index*4+1] = 1'b1;
-			end
-
 			if (io_dir == 0) begin // Off
-				leftioselect[io_index*4+2] = 1'b0;
-				leftioselect[io_index*4+3] = 1'b0;
-			end else if (io_dir == 1) begin // In
-				leftioselect[io_index*4+2] = 1'b0;
-				leftioselect[io_index*4+3] = 1'b1;
-			end else if (io_dir == 2) begin // Out
-				leftioselect[io_index*4+2] = 1'b1;
-				leftioselect[io_index*4+3] = 1'b0;
+				leftioselect[io_index*6+io_line*2+0] = 1'b0;
+				leftioselect[io_index*6+io_line*2+1] = 1'b0;
+			end else if (io_dir == 1) begin // Out
+				leftioselect[io_index*6+io_line*2+0] = 1'b0;
+				leftioselect[io_index*6+io_line*2+1] = 1'b1;
+			end else if (io_dir == 2) begin // In
+				leftioselect[io_index*6+io_line*2+0] = 1'b1;
+				leftioselect[io_index*6+io_line*2+1] = 1'b0;
 			end
 		end
 	endtask
@@ -155,26 +128,15 @@ module tb_fpga();
 	task set_right_io_cfg;
 		input io_index, io_line, io_dir;
 		begin
-			if (io_line == 0) begin
-				rightioselect[io_index*4] = 1'b0;
-				rightioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				rightioselect[io_index*4] = 1'b1;
-				rightioselect[io_index*4+1] = 1'b0;
-			end else if (io_line == 1) begin
-				rightioselect[io_index*4] = 1'b0;
-				rightioselect[io_index*4+1] = 1'b1;
-			end
-
 			if (io_dir == 0) begin // Off
-				rightioselect[io_index*4+2] = 1'b0;
-				rightioselect[io_index*4+3] = 1'b0;
-			end else if (io_dir == 1) begin // In
-				rightioselect[io_index*4+2] = 1'b0;
-				rightioselect[io_index*4+3] = 1'b1;
-			end else if (io_dir == 2) begin // Out
-				rightioselect[io_index*4+2] = 1'b1;
-				rightioselect[io_index*4+3] = 1'b0;
+				rightioselect[io_index*6+io_line*2+0] = 1'b0;
+				rightioselect[io_index*6+io_line*2+1] = 1'b0;
+			end else if (io_dir == 1) begin // Out
+				rightioselect[io_index*6+io_line*2+0] = 1'b0;
+				rightioselect[io_index*6+io_line*2+1] = 1'b1;
+			end else if (io_dir == 2) begin // In
+				rightioselect[io_index*6+io_line*2+0] = 1'b1;
+				rightioselect[io_index*6+io_line*2+1] = 1'b0;
 			end
 		end
 	endtask
