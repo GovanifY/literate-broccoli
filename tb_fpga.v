@@ -38,9 +38,11 @@ module tb_fpga();
 		topioselect = 30'b0;
 		bottomioselect = 30'b0;
 		$display("initialized memory");
-		set_bottom_io_cfg(0, 0, 2); // Bottom left in
+		// // set_bottom_io_cfg(0, 0, 1); // Bottom left in
+		bottomioselect[1] = 1'b1;
 		// set_top_io_cfg(0, 0, 1); // Top left out
-		set_left_io_cfg(0, 0, 1);
+		// // set_left_io_cfg(0, 0, 2);
+		leftioselect[0] = 1'b1;
 		// // set_brb_cfg(0, 0, 0, 2, 2);
 		brbselect[4] = 1'b0;
 		brbselect[5] = 1'b1;
