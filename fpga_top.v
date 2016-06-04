@@ -1,14 +1,14 @@
 module fpga_top(
 	input clk,
-	input [749:0] brbselect,
+	input [899:0] brbselect,
 	input [1727:0] bsbselect,
 	input [79:0] lbselect,
 	input [29:0] leftioselect,
 	input [29:0] rightioselect,
 	input [29:0] topioselect,
 	input [29:0] bottomioselect,
-	output [4:0] left, right,
-	output [4:0] top, bottom
+	inout [4:0] left, right,
+	inout [4:0] top, bottom
 	);
 	// left io blocks
 	wire [2:0] ibl1w, ibl2w, ibl3w, ibl4w, ibl5w;
@@ -44,10 +44,15 @@ module fpga_top(
 
 	wire [14:0] r_1, fr1_2, fr2_3, fr3_4;
 	// from bottom to top
-	last_row_routing lrr1(brbselect[179:0], ibl1w, ibr1w, ibbw, r_1);
+	/*last_row_routing lrr1(brbselect[179:0], ibl1w, ibr1w, ibbw, r_1);
 	fpga_row fr1(clk, brbselect[359:180], bsbselect[431:0], lbselect[19:0], ibl2w, ibr2w, r_1, fr1_2);
 	fpga_row fr2(clk, brbselect[539:360], bsbselect[863:432], lbselect[39:20], ibl3w, ibr3w, fr1_2, fr2_3);
 	fpga_row fr3(clk, brbselect[719:540], bsbselect[1295:864], lbselect[59:40], ibl4w, ibr4w, fr2_3, fr3_4);
-	fpga_row fr4(clk, brbselect[899:720], bsbselect[1727:1296], lbselect[79:60], ibl5w, ibr5w, fr3_4, ibtw);
+	fpga_row fr4(clk, brbselect[899:720], bsbselect[1727:1296], lbselect[79:60], ibl5w, ibr5w, fr3_4, ibtw);*/
+	last_row_routing lrr1(brbselect[179:0], ibl1w, ibr1w, r_1, ibbw);
+	fpga_row fr1(clk, brbselect[359:180], bsbselect[431:0], lbselect[19:0], ibl2w, ibr2w, fr1_2, r_1);
+	fpga_row fr2(clk, brbselect[539:360], bsbselect[863:432], lbselect[39:20], ibl3w, ibr3w, fr2_3, fr1_2);
+	fpga_row fr3(clk, brbselect[719:540], bsbselect[1295:864], lbselect[59:40], ibl4w, ibr4w, fr3_4, fr2_3);
+	fpga_row fr4(clk, brbselect[899:720], bsbselect[1727:1296], lbselect[79:60], ibl5w, ibr5w, ibtw, fr3_4);
 endmodule
 

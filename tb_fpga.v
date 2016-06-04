@@ -5,7 +5,7 @@ module tb_fpga();
 	wire out;
 	wire carryout;
 	// Configuration ports
-	reg [749:0] brbselect;
+	reg [899:0] brbselect;
 	reg [1727:0] bsbselect;
 	reg [79:0] lbselect;
 	reg [29:0] leftioselect;
@@ -16,10 +16,11 @@ module tb_fpga();
 	wire [4:0] left, right, top, bottom;
 
 	assign bottom[0] = A;
-	assign bottom[2] = B;
-	assign bottom[4] = carryin;
-	assign out = top[0];
-	assign carryout = top[4];
+	// assign bottom[2] = B;
+	// assign bottom[4] = carryin;
+	// // assign out = top[0];
+	assign out = left[0];
+	// assign carryout = top[4];
 
 	fpga_top f1(
 		clk, 
@@ -29,41 +30,25 @@ module tb_fpga();
 	);
 	reg k;
 	initial begin
-		brbselect = 750'b0;
+		brbselect = 900'b0;
 		bsbselect = 1728'b0;
 		lbselect = 80'b0;
 		leftioselect = 30'b0;
 		rightioselect = 30'b0;
 		topioselect = 30'b0;
 		bottomioselect = 30'b0;
-		/*for (k = 0; k < 750; k = k + 1)
-		begin
-			brbselect[k] = 1'b0;
-		end
-		for (k = 0; k < 1728; k = k + 1)
-		begin
-			bsbselect[k] = 1'b0;
-		end
-		for (k = 0; k < 80; k = k + 1)
-		begin
-			lbselect[k] = 1'b0;
-		end
-		for (k = 0; k < 20; k = k + 1)
-		begin
-			leftioselect[k] = 1'b0;
-			rightioselect[k] = 1'b0;
-			topioselect[k] = 1'b0;
-			bottomioselect[k] = 1'b0;
-		end*/
 		$display("initialized memory");
-		// #10 select = 4'b0000;
 		set_bottom_io_cfg(0, 0, 2); // Bottom left in
-		set_top_io_cfg(0, 0, 1); // Top left out
-		set_brb_cfg(0, 0, 0, 3, 2);
-		set_brb_cfg(1, 0, 0, 3, 2);
-		set_brb_cfg(2, 0, 0, 3, 2);
-		set_brb_cfg(3, 0, 0, 3, 2);
-		set_brb_cfg(4, 0, 0, 3, 2);
+		// set_top_io_cfg(0, 0, 1); // Top left out
+		set_left_io_cfg(0, 0, 1);
+		// // set_brb_cfg(0, 0, 0, 2, 2);
+		brbselect[4] = 1'b0;
+		brbselect[5] = 1'b1;
+		// // set_brb_cfg(0, 0, 0, 3, 1);
+		// set_brb_cfg(1, 0, 0, 3, 1);
+		// set_brb_cfg(2, 0, 0, 3, 1);
+		// set_brb_cfg(3, 0, 0, 3, 1);
+		// set_brb_cfg(4, 0, 0, 3, 1);
 
 		A = 1'b0; B = 1'b0; carryin = 1'b0;
 		$monitor("A = %b, B = %b, carryin = %b, out = %b, carryout = %b",
