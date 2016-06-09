@@ -1,4 +1,5 @@
 a.out
+.DS_STORE
 *.log
 *.aux
 *.auxlock
