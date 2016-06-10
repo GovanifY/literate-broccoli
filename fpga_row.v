@@ -25,10 +25,10 @@ module fpga_row(
 	bidir_switch_block bsb3(bsbselect[323:216], bsb3l, bsb3r, ls3);
 	bidir_switch_block bsb4(bsbselect[431:324], bsb4l, bsb4r, ls4);
 
-	logic_block lb1(clk, ls1[2:1], lbselect[3:0], lbselect[4], ls1[0]);
-	logic_block lb2(clk, ls2[2:1], lbselect[8:5], lbselect[9], ls2[0]);
-	logic_block lb3(clk, ls3[2:1], lbselect[13:10], lbselect[14], ls3[0]);
-	logic_block lb4(clk, ls4[2:1], lbselect[18:15], lbselect[19], ls4[0]);
+	logic_block lb1(clk, ls1[1:0], lbselect[3:0], lbselect[4], ls1[2]);
+	logic_block lb2(clk, ls2[1:0], lbselect[8:5], lbselect[9], ls2[2]);
+	logic_block lb3(clk, ls3[1:0], lbselect[13:10], lbselect[14], ls3[2]);
+	logic_block lb4(clk, ls4[1:0], lbselect[18:15], lbselect[19], ls4[2]);
 
 
 endmodule
