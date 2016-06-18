@@ -1,17 +1,23 @@
 module logic_block(
 	input clk,
-	input [1:0] select,
-	input [3:0] const_mem,
-	input sync,
-	output out
+	input [4:0] cfg,
+	inout [2:0] io
+	// input [1:0] select,
+	// input [3:0] const_mem,
+	// input sync,
+	// output out
 	);
 	wire l1out, sum, m1out, m2out, dout, dnotout;
 
-	lut l1(select[1:0], const_mem, l1out);
+	// io[1:0] is the combinational inputs
+	// cfg[3:0] is the LUT memory
+	lut l1(io[1:0], cfg[3:0], l1out);
 
 	dff dff1(l1out, clk, dout, dnotout);
 
-	mux2x1 m1(sync, l1out, dout, out);
+	// io[2] is the output
+	// cfg[4] is sync enable
+	mux2x1 m1(cfg[4], l1out, dout, io[2]);
 endmodule
 
 module lut(

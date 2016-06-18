@@ -58,7 +58,6 @@ module fpga_row(
 	generate
 	for (x = 0; x < fpga_width; x = x + 1) begin
 		localparam bsb_base = x*wire_width*wire_width*12;
-		localparam tb_base = x*wire_width;
 		bidir_switch_block bsb(
 			.select(bsbselect[bsb_base+wire_width*wire_width*12-1:bsb_base]),
 			.left(bsbl[x]),
@@ -71,13 +70,10 @@ module fpga_row(
 	generate
 	for (x = 0; x < fpga_width-1; x = x + 1) begin
 		localparam lb_base = x*5;
-		// localparam tb_base = x*wire_width;
 		logic_block lb(
 			.clk(clk),
-			.const_mem(lbselect[lb_base+3:lb_base]),
-			.sync(lbselect[lb_base+4]),
-			.select(ls[x][1:0]),
-			.out(ls[x][2])
+			.cfg(lbselect[lb_base+4:lb_base]),
+			.io(ls[x][2:0])
 		);
 	end
 	endgenerate

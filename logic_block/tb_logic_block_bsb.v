@@ -12,7 +12,7 @@ module tb_logic_block();
 	assign left[1] = in[1];
 	assign out = right[0];
 
-	logic_block lb1(clk, bottom[1:0], mem, sync, bottom[2]);
+	logic_block lb1(clk, {sync,mem}, bottom);
 	bidir_switch_block bsb1(cfg, left, right, bottom);
 	initial begin
 		cfg = 108'b0;
