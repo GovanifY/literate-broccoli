@@ -1,35 +1,86 @@
 module fpga_row(
 	input clk,
-	input [179:0] brbselect,
-	input [431:0] bsbselect,
-	input [19:0] lbselect,
-	inout [2:0] left,
-	inout [2:0] right,
-	inout [14:0] top,
-	inout [14:0] bottom
+	input [fpga_width*wire_width*12-1:0] brbselect,
+	input [(fpga_width-1)*(wire_width*wire_width*12)-1:0] bsbselect,
+	input [((fpga_width-1)*5)-1:0] lbselect,
+	inout [wire_width-1:0] left,
+	inout [wire_width-1:0] right,
+	inout [fpga_width*wire_width-1:0] top,
+	inout [fpga_width*wire_width-1:0] bottom
 	);
-	wire [2:0] ls1, ls2, ls3, ls4;
-	wire [2:0] bsb1l, bsb1r;
-	wire [2:0] bsb2l, bsb2r;
-	wire [2:0] bsb3l, bsb3r;
-	wire [2:0] bsb4l, bsb4r;
+	parameter wire_width = 3;
+	parameter fpga_width = 5;
+	wire [wire_width-1:0] ls1, ls2, ls3, ls4;
+	wire [wire_width-1:0] bsb1l, bsb1r;
+	wire [wire_width-1:0] bsb2l, bsb2r;
+	wire [wire_width-1:0] bsb3l, bsb3r;
+	wire [wire_width-1:0] bsb4l, bsb4r;
 
-	bidir_routing_block brb1(brbselect[35:0], left, bsb1l, top[2:0], bottom[2:0]);
-	bidir_routing_block brb2(brbselect[71:36], bsb1r, bsb2l, top[5:3], bottom[5:3]);
-	bidir_routing_block brb3(brbselect[107:72], bsb2r, bsb3l, top[8:6], bottom[8:6]);
-	bidir_routing_block brb4(brbselect[143:108], bsb3r, bsb4l, top[11:9], bottom[11:9]);
-	bidir_routing_block brb5(brbselect[179:144], bsb4r, right, top[14:12], bottom[14:12]);
+	wire [wire_width-1:0] bsbl[fpga_width-1:0];
+	wire [wire_width-1:0] bsbr[fpga_width-1:0];
+	wire [wire_width-1:0] ls[fpga_width-1:0];
 
-	bidir_switch_block bsb1(bsbselect[107:0], bsb1l, bsb1r, ls1);
-	bidir_switch_block bsb2(bsbselect[215:108], bsb2l, bsb2r, ls2);
-	bidir_switch_block bsb3(bsbselect[323:216], bsb3l, bsb3r, ls3);
-	bidir_switch_block bsb4(bsbselect[431:324], bsb4l, bsb4r, ls4);
+	genvar x;
+	generate
+	for (x = 0; x < fpga_width; x = x + 1) begin
+		localparam brb_base = x*wire_width*12;
+		localparam tb_base = x*wire_width;
+		if (x == 0) begin
+			bidir_routing_block brb(
+				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
+				.left(left),
+				.right(bsbl[x]),
+				.top(top[tb_base+wire_width-1:tb_base]),
+				.bottom(bottom[tb_base+wire_width-1:tb_base])
+			);
+		end
+		else if (x == fpga_width-1) begin
+			bidir_routing_block brb(
+				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
+				.left(bsbr[x]),
+				.right(right),
+				.top(top[tb_base+wire_width-1:tb_base]),
+				.bottom(bottom[tb_base+wire_width-1:tb_base])
+			);
+		end
+		else begin
+			bidir_routing_block brb(
+				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
+				.left(bsbr[x-1]),
+				.right(bsbl[x]),
+				.top(top[tb_base+wire_width-1:tb_base]),
+				.bottom(bottom[tb_base+wire_width-1:tb_base])
+			);
+		end
+	end
+	endgenerate
 
-	logic_block lb1(clk, ls1[1:0], lbselect[3:0], lbselect[4], ls1[2]);
-	logic_block lb2(clk, ls2[1:0], lbselect[8:5], lbselect[9], ls2[2]);
-	logic_block lb3(clk, ls3[1:0], lbselect[13:10], lbselect[14], ls3[2]);
-	logic_block lb4(clk, ls4[1:0], lbselect[18:15], lbselect[19], ls4[2]);
+	generate
+	for (x = 0; x < fpga_width; x = x + 1) begin
+		localparam bsb_base = x*wire_width*wire_width*12;
+		localparam tb_base = x*wire_width;
+		bidir_switch_block bsb(
+			.select(bsbselect[bsb_base+wire_width*wire_width*12-1:bsb_base]),
+			.left(bsbl[x]),
+			.right(bsbr[x]),
+			.bottom(ls[x])
+		);
+	end
+	endgenerate
 
+	generate
+	for (x = 0; x < fpga_width-1; x = x + 1) begin
+		localparam lb_base = x*5;
+		// localparam tb_base = x*wire_width;
+		logic_block lb(
+			.clk(clk),
+			.const_mem(lbselect[lb_base+3:lb_base]),
+			.sync(lbselect[lb_base+4]),
+			.select(ls[x][1:0]),
+			.out(ls[x][2])
+		);
+	end
+	endgenerate
 
 endmodule
 
