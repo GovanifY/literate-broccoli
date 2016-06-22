@@ -14,7 +14,7 @@ module last_row_routing(
 		localparam brb_base = x*wire_width*12;
 		localparam tb_base = x*wire_width;
 		if (x == 0) begin
-			bidir_routing_block brb(
+			bidir_routing_block #(wire_width) brb(
 				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
 				.left(left),
 				.right(brb[x]),
@@ -23,7 +23,7 @@ module last_row_routing(
 			);
 		end
 		else if (x == fpga_width-2) begin
-			bidir_routing_block brb(
+			bidir_routing_block #(wire_width) brb(
 				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
 				.left(brb[x]),
 				.right(right),
@@ -32,7 +32,7 @@ module last_row_routing(
 			);
 		end
 		else begin
-			bidir_routing_block brb(
+			bidir_routing_block #(wire_width) brb(
 				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
 				.left(brb[x-1]),
 				.right(brb[x]),

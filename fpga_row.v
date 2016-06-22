@@ -10,6 +10,7 @@ module fpga_row(
 	);
 	parameter wire_width = 3;
 	parameter fpga_width = 5;
+	parameter lb_cfg_size = 5;
 	wire [wire_width-1:0] ls1, ls2, ls3, ls4;
 	wire [wire_width-1:0] bsb1l, bsb1r;
 	wire [wire_width-1:0] bsb2l, bsb2r;
@@ -26,7 +27,7 @@ module fpga_row(
 		localparam brb_base = x*wire_width*12;
 		localparam tb_base = x*wire_width;
 		if (x == 0) begin
-			bidir_routing_block brb(
+			bidir_routing_block #(wire_width) brb(
 				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
 				.left(left),
 				.right(bsbl[x]),
@@ -35,7 +36,7 @@ module fpga_row(
 			);
 		end
 		else if (x == fpga_width-1) begin
-			bidir_routing_block brb(
+			bidir_routing_block #(wire_width) brb(
 				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
 				.left(bsbr[x]),
 				.right(right),
@@ -44,7 +45,7 @@ module fpga_row(
 			);
 		end
 		else begin
-			bidir_routing_block brb(
+			bidir_routing_block #(wire_width) brb(
 				.select(brbselect[brb_base+wire_width*12-1:brb_base]),
 				.left(bsbr[x-1]),
 				.right(bsbl[x]),
@@ -58,7 +59,7 @@ module fpga_row(
 	generate
 	for (x = 0; x < fpga_width; x = x + 1) begin
 		localparam bsb_base = x*wire_width*wire_width*12;
-		bidir_switch_block bsb(
+		bidir_switch_block #(wire_width) bsb(
 			.select(bsbselect[bsb_base+wire_width*wire_width*12-1:bsb_base]),
 			.left(bsbl[x]),
 			.right(bsbr[x]),
@@ -69,11 +70,11 @@ module fpga_row(
 
 	generate
 	for (x = 0; x < fpga_width-1; x = x + 1) begin
-		localparam lb_base = x*5;
+		localparam lb_base = x*lb_cfg_size;
 		logic_block lb(
 			.clk(clk),
-			.cfg(lbselect[lb_base+4:lb_base]),
-			.io(ls[x][2:0])
+			.cfg(lbselect[lb_base+lb_cfg_size-1:lb_base]),
+			.io(ls[x][wire_width-1:0])
 		);
 	end
 	endgenerate

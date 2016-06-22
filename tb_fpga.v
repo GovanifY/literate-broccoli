@@ -22,7 +22,7 @@ module tb_fpga();
 	assign out = left[0];
 	// assign carryout = top[4];
 
-	fpga_top #(3,5,5) f1(
+	fpga_top #(.fpga_width(5),.fpga_height(5)) f1(
 		clk, 
 		brbselect, bsbselect, lbselect, 
 		leftioselect, rightioselect, topioselect, bottomioselect, 

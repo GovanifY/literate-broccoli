@@ -10,7 +10,8 @@ module fpga_top(
 	inout [fpga_height-1:0] left, right,
 	inout [fpga_width-1:0] top, bottom
 	);
-	parameter wire_width = 3;
+	parameter wire_width = 7;
+	parameter lb_cfg_size = 10;
 	parameter fpga_width = 5;
 	parameter fpga_height = 5;
 
@@ -20,15 +21,15 @@ module fpga_top(
 	genvar y;
 	generate
 	for (y = 0; y < fpga_height; y = y + 1) begin
-		localparam ibl_base = y*6;
-		localparam ibr_base = y*6;
-		io_block ibl(
-			.select(leftioselect[ibl_base+5:ibl_base]),
+		localparam ibl_base = y*2*wire_width;
+		localparam ibr_base = y*2*wire_width;
+		io_block #(wire_width) ibl(
+			.select(leftioselect[ibl_base+2*wire_width-1:ibl_base]),
 			.in(iblw[y]),
 			.port(left[y])
 		);
-		io_block ibr(
-			.select(rightioselect[ibr_base+5:ibr_base]),
+		io_block #(wire_width) ibr(
+			.select(rightioselect[ibr_base+2*wire_width-1:ibr_base]),
 			.in(ibrw[y]),
 			.port(right[y])
 		);
@@ -41,15 +42,15 @@ module fpga_top(
 	genvar x;
 	generate
 	for (x = 0; x < fpga_width; x = x + 1) begin
-		localparam ibt_base = x*6;
-		localparam ibb_base = x*6;
-		io_block ibt(
-			.select(topioselect[ibt_base+5:ibt_base]),
+		localparam ibt_base = x*2*wire_width;
+		localparam ibb_base = x*2*wire_width;
+		io_block #(wire_width) ibt(
+			.select(topioselect[ibt_base+2*wire_width-1:ibt_base]),
 			.in(ibtw[x+wire_width-1:x]),
 			.port(top[x])
 		);
-		io_block ibb(
-			.select(bottomioselect[ibb_base+5:ibb_base]),
+		io_block #(wire_width) ibb(
+			.select(bottomioselect[ibb_base+2*wire_width-1:ibb_base]),
 			.in(ibbw[x+wire_width-1:x]),
 			.port(bottom[x])
 		);
@@ -65,7 +66,7 @@ module fpga_top(
 		localparam l_base = (y-1)*(fpga_width-1)*5;
 		localparam l_width = (fpga_width-1)*5;
 		if (y == 0) begin
-			last_row_routing lrr(
+			last_row_routing #(wire_width,fpga_width) lrr(
 				.brbselect(brbselect[r_base+fpga_width*wire_width*12-1:r_base]),
 				.left(iblw[y]),
 				.right(ibrw[y]),
@@ -74,7 +75,7 @@ module fpga_top(
 			);
 		end
 		else if (y == fpga_height-1) begin
-			fpga_row fr(
+			fpga_row #(wire_width,fpga_width,lb_cfg_size) fr(
 				.clk(clk),
 				.brbselect(brbselect[r_base+fpga_width*wire_width*12-1:r_base]),
 				.bsbselect(bsbselect[s_base+s_width-1:s_base]),
@@ -86,7 +87,7 @@ module fpga_top(
 			);
 		end
 		else begin
-			fpga_row fr(
+			fpga_row #(wire_width,fpga_width,lb_cfg_size) fr(
 				.clk(clk),
 				.brbselect(brbselect[r_base+fpga_width*wire_width*12-1:r_base]),
 				.bsbselect(bsbselect[s_base+s_width-1:s_base]),

@@ -1,3 +1,4 @@
+components/fulladder.v
 components/mux2x1.v
 components/mux4x1.v
 components/dff.v
