@@ -1,12 +1,12 @@
 module fpga_top(
 	input clk,
-	input [899:0] brbselect,
-	input [1727:0] bsbselect,
-	input [79:0] lbselect,
-	input [29:0] leftioselect,
-	input [29:0] rightioselect,
-	input [29:0] topioselect,
-	input [29:0] bottomioselect,
+	input [fpga_height*fpga_width*wire_width*12-1:0] brbselect,
+	input [(fpga_height-1)*(fpga_width-1)*(wire_width*wire_width*12)-1:0] bsbselect,
+	input [fpga_width*fpga_height*lb_cfg_size-1:0] lbselect,
+	input [fpga_height*2*wire_width-1:0] leftioselect,
+	input [fpga_height*2*wire_width-1:0] rightioselect,
+	input [fpga_width*2*wire_width-1:0] topioselect,
+	input [fpga_width*2*wire_width-1:0] bottomioselect,
 	inout [fpga_height-1:0] left, right,
 	inout [fpga_width-1:0] top, bottom
 	);

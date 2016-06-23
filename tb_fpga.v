@@ -1,17 +1,22 @@
 module tb_fpga();
+	parameter wire_width = 7;
+	parameter lb_cfg_size = 10;
+	parameter fpga_width = 5;
+	parameter fpga_height = 5;
+
 	// Test ports
 	reg A, B;
 	reg carryin;
 	wire out;
 	wire carryout;
 	// Configuration ports
-	reg [899:0] brbselect;
-	reg [1727:0] bsbselect;
-	reg [79:0] lbselect;
-	reg [29:0] leftioselect;
-	reg [29:0] rightioselect;
-	reg [29:0] topioselect;
-	reg [29:0] bottomioselect;
+	reg [fpga_height*fpga_width*wire_width*12-1:0] brbselect;
+	reg [(fpga_height-1)*(fpga_width-1)*(wire_width*wire_width*12)-1:0] bsbselect;
+	reg [fpga_width*fpga_height*lb_cfg_size-1:0] lbselect;
+	reg [2*wire_width*fpga_height-1:0] leftioselect;
+	reg [2*wire_width*fpga_height-1:0] rightioselect;
+	reg [2*wire_width*fpga_height-1:0] topioselect;
+	reg [2*wire_width*fpga_height-1:0] bottomioselect;
 
 	wire [4:0] left, right, top, bottom;
 
@@ -22,7 +27,12 @@ module tb_fpga();
 	assign out = left[0];
 	// assign carryout = top[4];
 
-	fpga_top #(.fpga_width(5),.fpga_height(5)) f1(
+	fpga_top #(
+		.wire_width(wire_width),
+		.lb_cfg_size(lb_cfg_size),
+		.fpga_width(fpga_width),
+		.fpga_height(fpga_width)
+	) f1(
 		clk, 
 		brbselect, bsbselect, lbselect, 
 		leftioselect, rightioselect, topioselect, bottomioselect, 
