@@ -11,7 +11,7 @@ module fpga_top(
 	inout [fpga_width-1:0] top, bottom
 	);
 	parameter wire_width = 7;
-	parameter lb_cfg_size = 10;
+	parameter lb_cfg_size = 18;
 	parameter fpga_width = 5;
 	parameter fpga_height = 5;
 
