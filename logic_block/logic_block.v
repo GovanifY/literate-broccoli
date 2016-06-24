@@ -9,7 +9,7 @@ module logic_block(
 	);
 	defparam fpga_top.wire_width = 7;
 	parameter cfg_size = 18;
-	wire l1out, l2out, sum, m1out, m2out, dout, dnotout;
+	wire l1out, l2out, sum, m1out, m2out, dout;
 
 	// io[2:0] is the first three combinational inputs
 	// cfg[15:0] is the LUT memory
@@ -26,7 +26,7 @@ module logic_block(
 		.carryout(io[6])
 	);
 
-	dff dff1(m2out, clk, dout, dnotout);
+	dff dff1(m2out, clk, dout);
 
 	// io[3] picks which LUT to use
 	mux2x1 m1(io[3], l1out, l2out, m1out);

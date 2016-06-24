@@ -1,14 +1,14 @@
 module dff(
 	input d, clk,
-	output reg q, qnot
+	output qout
 	);
-	initial begin
-		q = 1'b0;
-		qnot = 1'b1;
-	end
+	reg q;
+	assign qout = q;
+	/*initial begin
+		q <= 1'b0;
+	end*/
 	always @ (posedge clk) begin 
-		q = d;
-		qnot = ~d;
+		q <= d;
 	end
 endmodule
 
